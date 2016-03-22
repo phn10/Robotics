@@ -9,72 +9,101 @@
 
 using namespace std;
 
+/**
+  * this class represent a point
+  */
 class Point
 {
 	private:
-		string name;
-		double x;
-		double y;
+		double x;              // x value of this point
+		double y;              // y value of this point
 	public:
+		/**
+		  * constructor
+		  */
 		Point()
 		{}
 
-		Point(string id, double x_in, double y_in)
-		{
-			name = id;
-			x = x_in;
-			y = y_in;
-		}
-
+		/**
+		  * constructor
+		  * @param x_in x value of this point
+		  * @param y_in y value of this point
+		  */
 		Point(double x_in, double y_in)
 		{
 			x = x_in;
 			y = y_in;
 		}
 
-		string getName()
-		{ return name; }
-
+		/**
+		  * get the value of x
+		  */
 		double getX()
 		{ return x; }
 
+		/**
+		  * get the value of y
+		  */
 		double getY()
 		{ return y; }
 
-		void setName(string id)
-		{ name = id; }
-
+		/**
+		  * set the value of x
+		  * @param x_in x value of this point
+		  */
 		void setX(double x_in)
 		{ x = x_in; }
 
+		/**
+		  * set the value of y
+		  * @param y_in y value of this point
+		  */
 		void setY(double y_in)
 		{ y = y_in; }
 };
 
+/**
+  * this class represents a line by drawing a line between two points
+  */
 class Line
 {
 	private:
-		Point *point1;
-		Point *point2;
-		double length;
-		double angle;
+		Point *point1;       // point1 
+		Point *point2;       // point2 
+		double length;       // length of this secment
+		double angle;        // the angle of this line
 	public:
+		
+		/**
+		  * constructor
+		  * @param p1 point1
+		  * @param p2 point2
+		  */
 		Line(Point *p1, Point *p2)
 		{
-			point1 = p1;
-			point2 = p2;
+			point1 = p1;          // point1
+			point2 = p2;          // point2
 			length = sqrt(pow((point1->getX() - point2->getX()), 2) + 
 				      pow((point1->getY() - point2->getY()), 2));
 			angle = (point2->getY() - point1->getY()) / 
 				(point2->getX() - point1->getX()); 
 		}
 
+		/**
+		  * get the length of the secment between point1 and point2 
+		  */
 		double getLength()
 		{ return length; }
 
+		/**
+		  * get the angle of this line
+		  */	
 		double getAngle()
 		{ return angle; }
 
+		/**
+		  * get the value of b in y = ax + b
+		  */
 		double getB()
 		{ return point2->getY() - point2->getX() * angle; }
 };
@@ -91,56 +120,56 @@ int main()
 	double robotWidth = 0.5;	// the width of robot 
 	double mapLength = 20.0;	// length of the map
 	double mapWidth = 10.0;		// width of the map
-	int numObs = 3;			// number of obstacles, in this case, 3 rocks
+	int numRocks = 3;		// number of rocks, in this case, 3 rocks
 	double radiusMin = 1.25;	// minimum value of rock's radius
 	double radiusMax = 1.5;		// maximum value of rock's radius
-	Point obs[numObs + 2];     	// an array contains the positon of obstacle + 2 boundary lines
-	double rad[numObs + 2];  	// an array contains radius of obstacle
+	Point rocks[numRocks + 2];     	// an array contains the positon of obstacle + 2 boundary lines
+	double rad[numRocks + 2];  	// an array contains radius of obstacle
 	bool found = false;		// found == true if we can find the possible path
 	vector<double> path_X; 		// a vector contains the x value of possible paths	
 
 	// create the left and right boundary as obstacles
-	obs[0].setX(0.0);		 	// left boundary, x = 0
+	rocks[0].setX(0.0);		 	// left boundary, x = 0
 	rad[0] = 0.0;
-	obs[numObs + 1].setX(mapWidth);     	// right boundary, x = mapWidth
-	rad[numObs + 1] = 0.0;
+	rocks[numRocks + 1].setX(mapWidth);     	// right boundary, x = mapWidth
+	rad[numRocks + 1] = 0.0;
 
 	srand(time(NULL));
 
 	// create numObs obstacles and assign to it's division
-	for (int i = 0; i < numObs; i++)
+	for (int i = 0; i < numRocks; i++)
 	{
-		double divStart = (mapWidth / numObs) * i;	// division begin line
-		double divEnd = (mapWidth / numObs) * (i + 1);  // division end line
+		double divStart = (mapWidth / numRocks) * i;	// division begin line
+		double divEnd = (mapWidth / numRocks) * (i + 1);  // division end line
 		double r = fRand(radiusMin, radiusMax);		// find the radom btw max and min
 		double px = fRand(divStart, divEnd);		// random value of x in its division
 		double py = fRand(mapLength / 3, mapLength * 2 / 3); // random value of y
 		
 		// set the position of obstacles by x and y	
-		obs[i + 1].setX(px);    
-		obs[i + 1].setY(py);
+		rocks[i + 1].setX(px);    
+		rocks[i + 1].setY(py);
 		rad[i + 1] = r;		// set value of radius
 	}
 
-	// print out the obstacles and their radius and their x, y value
-	for(int i = 0; i < numObs + 2; i++)
+	// print out the obstacles, their radius and their x, y value
+	for(int i = 0; i < numRocks + 2; i++)
 	{
 		cout << "Rock " << i + 1 << ": " << "  radius: " << rad[i]
-		     << "  x: " << obs[i].getX() << "  y: " << obs[i].getY() << endl;
+		     << "  x: " << rocks[i].getX() << "  y: " << rocks[i].getY() << endl;
 	}
 
 	// find the center of the distance between each obstacles 
 	// and check can we put the robot between those obstacles
-	for (int i = 0; i <= numObs; i++)
+	for (int i = 0; i < numRocks + 1; i++)
 	{
 		double distance;	// distance between two obstacles
-		distance = obs[i + 1].getX() - obs[i].getX() - rad[i + 1] - rad[i];
-		
+		distance = rocks[i + 1].getX() - rocks[i].getX() - rad[i + 1] - rad[i];
+		cout << "Rock" << i + 1 << " and Rock" << i + 2 << ": " << distance << endl;	
 		// if the robot can fit into the distance between two obstacles
 		// put the x value of the center of two obstacles into path_X vector
 		if (distance > robotWidth)
 		{
-			path_X.push_back(obs[i].getX() + distance / 2);	
+			path_X.push_back(rocks[i].getX() + rad[i] + distance / 2);	
 			found = true;
 		}
 	}
@@ -177,33 +206,37 @@ int main()
 
 	// we assume the safe distance from  robot to obstacles is radiusMax
 
-	double target_Y = robot_Y;                // the y value of the point where the robot has to turn
-	double target_X = closetPath;             // the x value of the point where the robot has to turn
-	Point target(target_X, target_Y);         // create a point from the target point
+	double turning_Y = robot_Y;                // the y value of the point where the robot has to turn
+	double turning_X = closetPath;             // the x value of the point where the robot has to turn
+	Point turning(turning_X, turning_Y);       // create a turning point
 
 	// move the turning point along the y-axis of the path we just find
-	while (target_Y < mapLength)
+	while (turning_Y < mapLength)
 	{
-		for (int i = 1; i < numObs; i++)
+		cout << "y: " << turning_Y << endl;
+		// find the distance between the line, turning point to the robot,
+		// and each rocks
+		for (int i = 1; i < numRocks + 1; i++)
 		{
-			if (target_Y >= obs[i].getY())
+			if (turning_Y >= rocks[i].getY() - radiusMax)
 			{
-				Line y(&target, &robot);		// draw a line from the turning point to the robot
-				double temp = pointToLine(obs[i], y);	// calculate the distance from the rock to the line btw robot and turning point
+				cout << "Rock" << i << ": ";
+				Line y(&turning, &robot);		// draw a line from the turning point to the robot
+				double temp = pointToLine(rocks[i], y);	// calculate the distance from the rock to the line btw robot and turning point
+				cout << temp << endl;
 				if (temp < robotWidth + radiusMax)
 					goto finish;			// if we can find the target exit the loop
 			}
 		}
-		target_Y += 0.2;
-		target.setY(target_Y);        	// set new turning point with new  y value
+		turning_Y += 0.2;                // increase the y value of turning point by 0.2 
+		turning.setY(turning_Y);        	// set new turning point with new  y value
 	}
 
 	finish:
 	cout << "The Turning Point is: " 
-	     << "x: " << target_X << "  y: " << target_Y << endl;
+	     << "x: " << turning_X << "  y: " << turning_Y << endl;
 
-
-
+	
 	return 0;
 }
 
@@ -224,26 +257,18 @@ double fRand(double fMin, double fMax)
 double pointToLine(Point p, Line l)
 {
 	// create a perpendicular line to l
-	double a1 = -1 / l.getAngle();            
-	double b1 = p.getY() - a1 * p.getX();
-	double a2 = l.getAngle();
-	double b2 = l.getB();
-	double x, y;
-	double distance; 	// distance from ponint to line
+	double a1 = -1 / l.getAngle();         // angular of the perpendicular line   
+	double b1 = p.getY() - a1 * p.getX();  // the b value of the perpendicular line     
+	double a2 = l.getAngle();              // angular of line 2
+	double b2 = l.getB();                  // the b value of line 2
+	double x, y;            // x and y position of the intersect point        
+	double distance; 	// distance from ponint to line 
 	
-	solveTwoEquations(a1, b1, a2, b2, x, y);
+	x = (b2 - b1) / (a1 - a2);
+	y = a2 * x + b2;
 
-	distance = sqrt(pow((p.getX() - x), 2) + pow((p.getY() - y), 2));
+	Point intersect(x, y);  // intersect point
+	Line line1(&p, &intersect);	 // line between point p and intersect point
+	distance = line1.getLength();    // find the distance of the secment
 	return distance;
 }	
-
-/**  find the distance between a point to a line
-  *  @param p the point
-  *  @param l the line
-  */
-void solveTwoEquations(double a1, double b1, double a2, double b2, double x, double y)
-{
-	double determinant = -a1 + a2;
-	x = (b1 - b2) / determinant;
-	y = (-a1 * b2 + a2 * b1) / determinant;
-}
