@@ -114,7 +114,7 @@ void solveTwoEquations(double , double , double , double , double , double);
 
 int main()
 {
-	double robot_X = 5.0;		// initial x position of robot
+	double robot_X = 1.0;		// initial x position of robot
 	double robot_Y = 1.0;		// initial y position of robot
 	Point robot(robot_X, robot_Y);	// point of the initial position of robot
 	double robotWidth = 0.5;	// the width of robot 
@@ -188,7 +188,7 @@ int main()
 	}
 
 	double distanceToPath = mapWidth;	// distance from robot to possible path
-	double closetPath;                      // distance from robot to the closet path
+	double closetPath;                      // x axis of the closet path
 
 	for (int i = 0; i < path_X.size(); i++)
 	{
@@ -215,12 +215,14 @@ int main()
 	{
 		cout << "y: " << turning_Y << endl;
 		// find the distance between the line, turning point to the robot,
-		// and each rocks
-		for (int i = 1; i < numRocks + 1; i++)
+		// and each rocks	
+		for (int i = 0; i < numRocks + 2; i++)
 		{
-			if (turning_Y >= rocks[i].getY() - radiusMax)
+			// find the rocks that are positioned between robot's original position
+			// and the possible path
+			if ((turning_X - rocks[i].getX()) * (rocks[i].getX() - robot_X) >= 0)
 			{
-				cout << "Rock" << i << ": ";
+				cout << "Distance to Rock" << i << ": ";
 				Line y(&turning, &robot);		// draw a line from the turning point to the robot
 				double temp = pointToLine(rocks[i], y);	// calculate the distance from the rock to the line btw robot and turning point
 				cout << temp << endl;
